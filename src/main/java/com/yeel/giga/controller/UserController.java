@@ -16,7 +16,7 @@ public class UserController {
         return null;
     }
 
-    @GetMapping("getToken")
+    @GetMapping("get-token")
     public String getUserToken() {
         return null;
     }

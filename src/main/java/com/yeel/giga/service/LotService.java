@@ -1,5 +1,6 @@
 package com.yeel.giga.service;
 
+import com.yeel.giga.model.UserData;
 import com.yeel.giga.repository.LotRepository;
 import com.yeel.giga.model.Lot;
 import lombok.RequiredArgsConstructor;

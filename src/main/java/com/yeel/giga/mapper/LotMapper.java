@@ -1,14 +1,22 @@
 package com.yeel.giga.mapper;
 
 import com.yeel.giga.dto.request.HandLot;
+import com.yeel.giga.dto.request.appRequest.LotAppDTO;
 import com.yeel.giga.dto.response.LotBasicDTO;
+import com.yeel.giga.enums.LotStatus;
+import com.yeel.giga.model.BuyInformation;
 import com.yeel.giga.model.Lot;
+import com.yeel.giga.model.LotMoney;
+import com.yeel.giga.model.UserData;
+import com.yeel.giga.repository.AvitoEntityRepository;
 import com.yeel.giga.repository.BuyInformationRepository;
 import com.yeel.giga.repository.LotMoneyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @Component
@@ -18,6 +26,8 @@ public class LotMapper {
     private final BuyInformationMapper buyInformationMapper;
     private final BuyInformationRepository buyInformationRepository;
     private final LotMoneyRepository lotMoneyRepository;
+    private final AvitoEntityRepository avitoEntityRepository;
+    private final AvitoEntityMapper avitoEntityMapper;
 
 
     public LotBasicDTO mapLotToLotBasicDTO(Lot lot) {
@@ -37,7 +47,7 @@ public class LotMapper {
         );
     }
 
-    public Lot mapHandLotToLot(HandLot handLot) {
+    public Lot mapHandLotToLot(HandLot handLot, UserData owner) {
         return new Lot(
                 handLot.getId(),
                 handLot.getName(),
@@ -67,7 +77,49 @@ public class LotMapper {
                                 handLot.getBuyInformationDTO()
                         )
                 ),
-                new ArrayList<>()
+                new ArrayList<>(),
+                owner
         );
+    }
+
+    public Lot mapAppLotDTOtoLot(LotAppDTO lotAppDTO, UserData owner) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        Lot lot = new Lot();
+        LotMoney lotMoney = new LotMoney();
+        BuyInformation buyInformation = new BuyInformation();
+
+        lot.setName(lotAppDTO.getTbankrot().getTitle());
+        lot.setAddress(lotAppDTO.getTbankrot().getProperties().get(0).getAddress());
+
+        lot.setKadastrNumber(lotAppDTO.getTbankrot().getProperties().get(0).getKad());
+        lot.setKadastrPrice(lotAppDTO.getTbankrot().getProperties().get(0).getCadastralValue());
+
+        lot.setNumberSell(lotAppDTO.getTbankrot().getProperties().get(0).getRegistrationDetails());
+        lot.setSquare(lotAppDTO.getTbankrot().getProperties().get(0).getArea());
+        lot.setLotStatus(LotStatus.REGISTERED);
+
+        lot.setDatePublished(LocalDate.parse(lotAppDTO.getTbankrot().getProperties().get(0).getInformationUpdateDate(), formatter));
+        lot.setDateCreated(LocalDate.now());
+        lot.setLotLink(lotAppDTO.getTbankrot().getUrl());
+
+        lot.setLotMoney(lotMoneyRepository.save(
+                lotMoney
+        ));
+
+        lot.setBuyInformation(buyInformationRepository.save(
+                buyInformation
+        ));
+
+        lot.setOwner(owner);
+
+        lot.setAvitoEntities(
+                avitoEntityRepository.saveAll(
+                        lotAppDTO.getProperties().stream().map(
+                                avitoEntityMapper::mapAvitoEntityDTOtoAvitoEntity
+                        ).toList()
+                )
+        );
+
+        return lot;
     }
 }

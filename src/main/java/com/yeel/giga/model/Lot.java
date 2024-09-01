@@ -43,4 +43,7 @@ public class Lot {
     private BuyInformation buyInformation;
     @ManyToMany
     private List<AvitoEntity> avitoEntities;
+    @ManyToOne
+    private UserData owner;
+
 }

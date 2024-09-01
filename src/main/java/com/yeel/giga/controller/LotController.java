@@ -4,8 +4,11 @@ import com.yeel.giga.dto.request.HandLot;
 import com.yeel.giga.dto.response.LotBasicDTO;
 import com.yeel.giga.mapper.LotMapper;
 import com.yeel.giga.model.Lot;
+import com.yeel.giga.model.UserData;
 import com.yeel.giga.service.LotService;
+import com.yeel.giga.service.UserDataService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.List;
 public class LotController {
     private final LotService lotService;
     private final LotMapper lotMapper;
+    private final UserDataService userDataService;
 
     @GetMapping()
     public List<LotBasicDTO> getAllBasic() {
@@ -31,8 +35,15 @@ public class LotController {
 
     @PostMapping()
     public Lot createLot(@RequestBody HandLot handLot) {
+        UserData userData = userDataService.find(
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName()
+        );
+
         return lotService.create(
-                lotMapper.mapHandLotToLot(handLot)
+                lotMapper.mapHandLotToLot(handLot, userData)
         );
     }
 

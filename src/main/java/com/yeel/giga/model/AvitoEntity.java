@@ -21,9 +21,9 @@ public class AvitoEntity {
     private String link;
     private String squareHouse;
     private String squareHome;
-    private BigDecimal price;
-    private BigDecimal pricePerSquare;
+    private String price;
+    private String pricePerSquare;
     private String phone;
-    private Integer scope;
+    private String scope;
     private AvitoEntityStatus avitoEntityStatus;
 }

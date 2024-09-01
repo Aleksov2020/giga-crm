@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Extract Headings",
+  "version": "1.0",
+  "description": "Extension to extract headings from web pages.",
+  "permissions": [
+    "downloads",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.avito.ru/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon-pazzle.png",
+      "48": "icon-pazzle.png",
+      "128": "icon-pazzle.png"
+    }
+  },
+  "icons": {
+    "16": "icon-pazzle.png",
+    "48": "icon-pazzle.png",
+    "128": "icon-pazzle.png"
+  }
+}

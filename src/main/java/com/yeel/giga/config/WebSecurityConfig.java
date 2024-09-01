@@ -29,7 +29,7 @@ public class WebSecurityConfig {
         return
                 http
                         .csrf(AbstractHttpConfigurer::disable)
-                        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                        .cors(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .anyRequest().permitAll()
@@ -41,18 +41,6 @@ public class WebSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
         )
         .build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*")); // Разрешить запросы с любых источников
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true); // Разрешить отправку куков
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
     @Bean

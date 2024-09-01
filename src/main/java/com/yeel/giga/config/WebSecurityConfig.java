@@ -29,7 +29,7 @@ public class WebSecurityConfig {
         return
                 http
                         .csrf(AbstractHttpConfigurer::disable)
-                        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                        .cors(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .anyRequest().permitAll()
@@ -46,7 +46,7 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // Разрешение всех источников
+        configuration.setAllowedOrigins(List.of("185.70.53.61", "81.95.167.66")); // Разрешение всех источников
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Разрешение всех методов
         configuration.setAllowedHeaders(List.of("*")); // Разрешение всех заголовков
         configuration.setAllowCredentials(true); // Разрешение отправки куков

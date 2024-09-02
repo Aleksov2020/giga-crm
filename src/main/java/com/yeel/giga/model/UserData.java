@@ -23,4 +23,12 @@ public class UserData {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    public UserData updateSettings(UserSettings userSettings) {
+        Long id = userSettings.getId();
+        this.userSettings = userSettings;
+        this.userSettings.setId(id);
+
+        return this;
+    }
 }

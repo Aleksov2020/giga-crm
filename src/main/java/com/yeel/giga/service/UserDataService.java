@@ -34,4 +34,8 @@ public class UserDataService implements UserDetailsService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
     }
+
+    public UserData save(UserData userData) {
+        return userRepository.save(userData);
+    }
 }

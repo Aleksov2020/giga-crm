@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -34,6 +35,7 @@ public class HandLot {
     private String lotDiskLink;
     private String avitoLink;
     private String comment;
-    private LotMoneyDTO lotMoneyDTO;
-    private BuyInformationDTO buyInformationDTO;
+    private LotMoneyDTO lotMoney;
+    private BuyInformationDTO buyInformation;
+    private List<AvitoEntity> avitoEntities;
 }

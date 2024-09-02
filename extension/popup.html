@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <title>Avito Parser | Tbankrot</title>
 </head>
@@ -28,13 +28,61 @@
     transition: .4s;
     background-color: #c7c7c7;
   }
+  .input {
+    padding: 6px;
+    border-radius: 6px;
+    outline: 0;
+    border: 1px solid rgba(128, 128, 128, 0.384)
+  }
+  .nav {
+    border: 0;
+    border-bottom: 1px solid gray;
+    padding-bottom: 2px;
+    border-radius: 2px;
+  }
+  .nav:hover {
+    background-color: unset;
+    border-bottom: 2px solid gray;
+    transition: 0s;
+  }
+
+  .hidden {
+    display: none;
+  }
   html{
-    width: 500px;
+    width: 760px;
+    padding: 0 12px;
+    padding-bottom: 36px;
   }
 </style>
 <body>
   <h1>Avito Parser | Tbankrot</h1>
-  <div class="col">
+  <div class="auth col" id="auth-panel">
+    <div class="row">
+      <input type="text" id="username" class="input" placeholder="username">
+    </div>
+    <div class="row">
+      <input type="text" id="key" class="input" placeholder="key">
+    </div>
+    <div class="row">
+      <button id="login">Login</button>
+    </div>
+  </div>
+  <div class="col hidden" id="main-panel">
+    <div class="row">
+      <button id="backToLogin" class="nav"> < Back to Login</button>
+      <button id="additionalBtns" class="nav"> Additional Buttons > </button>
+    </div>
+    <div class="row">
+      <input type="text" id="linkToAvitoMap" class="input" placeholder="Avito map link">
+      <button id="extractFullCycle">Extract full cycle</button>
+    </div>
+  </div>
+  
+  <div class="col hidden" id="additional-panel">
+    <div class="row">
+      <button id="backToMain" class="nav"> < Back to main panel </button>
+    </div>
     <div class="row">
       <button id="extractBtn">Avito - Extract Links</button>
       <button id="extractPage">Avito - Extract Page</button>
@@ -43,11 +91,9 @@
       <button id="extractPagesFromLinks">Avito - Extract links, then pages from links</button>
       <button id="extractBrokerData">TBankrot - Extract data</button>
     </div>
-    <div class="row">
-      <button id="extractFullCycle">Extract full cycle</button>
-    </div>
+    <button id="testRemap">Test remap</button>
   </div>
-  <button id="testRemap">Test remap</button>
+
   <script src="popup.js"></script>
 </body>
 </html>

@@ -69,12 +69,12 @@ public class LotMapper {
                 handLot.getComment(),
                 lotMoneyRepository.save(
                         lotMoneyMapper.mapLotMoneyDTOToLotMoney(
-                                handLot.getLotMoneyDTO()
+                                handLot.getLotMoney()
                         )
                 ),
                 buyInformationRepository.save(
                         buyInformationMapper.mapBuyInformationDTOToBuyInformation(
-                                handLot.getBuyInformationDTO()
+                                handLot.getBuyInformation()
                         )
                 ),
                 new ArrayList<>(),

@@ -9,9 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -25,7 +23,24 @@ public class UserController {
 
     @GetMapping("settings")
     public UserSettings getUserSettings() {
-        return null;
+        return userDataService.find(
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName()
+        ).getUserSettings();
+    }
+
+    @PostMapping("settings")
+    public UserSettings getUserSettings(@RequestBody UserSettings userSettings) {
+        return userDataService.save(
+                userDataService.find(
+                        SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                                .getName()
+                ).updateSettings(userSettings)
+        ).getUserSettings();
     }
 
     @GetMapping("get-token")

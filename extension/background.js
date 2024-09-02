@@ -16,8 +16,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         [CommandMessagesIn.EXTRACT_FULL_CYCLE]: PerformFullCycle,
         [CommandMessagesIn.TEST_REMAP]: PerformTestRemap,
     };
-    if (mapMessagesToActions[message]) {
-        mapMessagesToActions[message]();
+    if (mapMessagesToActions[message.command]) {
+        mapMessagesToActions[message.command](message.data);
     }
 });
 
@@ -150,29 +150,35 @@ function PerformExtractTBankrotData() {
     });
 }
 
-async function PerformFullCycle() {
+async function PerformFullCycle(data) {
+    console.log("Start full cycle")
+    console.log(data)
+
     let tbankrotData = {};
     const extractedData = [];
     const step0Tabs = await chrome.tabs.query({ active: true });
     const step0Tab = step0Tabs.filter((valtab) => !valtab.url.startsWith("chrome://"))[0];
+
     if (step0Tab) {
+        console.log("Start script")
         await chrome.scripting.executeScript(
             {
-                target: { tabId: step0Tab.id },
+                target: { tabId: step0Tab.id, allFrames: true },
                 func: extractTBankrotData,
             },
             (results) => {
                 tbankrotData = results[0].result;
+                console.log(tbankrotData)
             }
         );
     } else {
-        alert("failed to get step 0 tab");
+        console.log("failed to get step 0 tab");
         return;
     }
-    const avitoUrl = getAvitoLinkFromKad(tbankrotData.kad);
-    const step1Tab = await chrome.tabs.create({ url: avitoUrl });
+    console.log(data.link)
+    const step1Tab = await chrome.tabs.create({ url: data.link });
     const step2Tabs = [];
-    const delay = new Promise((r) => setTimeout(r, 4000));
+    const delay = new Promise((r) => setTimeout(r, 8000));
     await delay;
     if (step1Tab) {
         let step1Results = await chrome.scripting.executeScript(
@@ -190,7 +196,7 @@ async function PerformFullCycle() {
         }
 
     } else {
-        alert("could not get step 1 tab");
+        console.log("could not get step 1 tab");
         return;
     }
 
@@ -212,9 +218,34 @@ async function PerformFullCycle() {
         tbankrot: tbankrotData,
         properties: extractedData
     }
-    downloadBlob(final, "final.txt");
-    //todo finish
+    downloadBlob(final, tbankrotData.title + ".txt");
+        
+    const params = new URLSearchParams({
+        key: data.creds.key,
+        username: data.creds.username
+    }).toString();
 
+    // Отправка POST-запроса с использованием fetch
+    fetch(`http://localhost:2000/api/v1/app?${params}`, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json' // Указываем, что данные будут в формате JSON
+        },
+        body: JSON.stringify(final)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Если сервер вернул JSON, вы можете его обработать
+    })
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 async function PerformTestRemap() {
@@ -431,6 +462,9 @@ function extractPage() {
 }
 
 function extractTBankrotData() {
+    console.log("Extract tbancrot")
+    console.log(document.url)
+
     const mapItemInfoStringsToDataKeys = {
         "Кадастровый номер:": "kad",
         "Площадь, кв.м:": "area",
@@ -438,30 +472,50 @@ function extractTBankrotData() {
     };
     const propertiesInLot = [];
     let rootBlock = document.getElementById("real_estate_info");
-    for (const property_block of rootBlock.children) {
-        if (property_block.classList.contains("kadastr__maps")) continue;
-        const currentProperty = {
-            lat: property_block.getAttribute("data-lat"),
-            lon: property_block.getAttribute("data-lon"),
-        };
 
-        for (const propertyTab of property_block.children) {
-            if (propertyTab.id.startsWith("RosreestrInfo_")) {
-                for (const itemInfo of propertyTab.children[0].children) {
-                    let selectedKey = itemInfo.firstChild.textContent.trim();
-                    for (const [key, value] of Object.entries(
-                        mapItemInfoStringsToDataKeys
-                    )) {
-                        if (selectedKey.startsWith(key)) {
-                            selectedKey = value;
+    if (rootBlock) {
+        for (const property_block of rootBlock.children) {
+            if (property_block.classList.contains("kadastr__maps")) continue;
+            const currentProperty = {
+                lat: property_block.getAttribute("data-lat"),
+                lon: property_block.getAttribute("data-lon"),
+            };
+    
+            for (const propertyTab of property_block.children) {
+                if (propertyTab.id.startsWith("RosreestrInfo_")) {
+                    for (const itemInfo of propertyTab.children[0].children) {
+                        let selectedKey = itemInfo.firstChild.textContent.trim();
+                        for (const [key, value] of Object.entries(
+                            mapItemInfoStringsToDataKeys
+                        )) {
+                            if (selectedKey.startsWith(key)) {
+                                selectedKey = value;
+                            }
                         }
+                        currentProperty[selectedKey] =
+                            itemInfo.children[0].textContent.trim();
                     }
-                    currentProperty[selectedKey] =
-                        itemInfo.children[0].textContent.trim();
                 }
             }
+            propertiesInLot.push(currentProperty);
         }
-        propertiesInLot.push(currentProperty);
+    } else {
+        const lotText = document.querySelector('.lot_text').innerText;
+
+        const addressMatch = lotText.match(/адрес(?:\S+)?[:\s]+([\s\S]+?)(?=<br>)/i);
+        const areaMatch = lotText.match(/площад[ьи][\s\S]*?(\d+(?:[.,]\d+)?)\s*кв\.м/);
+        const cadastralNumberMatch = lotText.match(/кадастров[ыий\s]*(номер|номера|номер земельного участка|номер земельного участка:)\s*[:\s]+([\d:]+)/i);
+        const cadastralDateMatch = lotText.match(/дата внесения кад\.\s*стоимости[:\s]+([\d.]+)/i);
+        const floorMatch = lotText.match(/этаж[№\s]*(\d+)/i);
+        
+
+        propertiesInLot.push({
+            address: addressMatch ? addressMatch[1].trim() : null,
+            area: areaMatch ? areaMatch[1].replace(',', '.').trim() : null,
+            kad: cadastralNumberMatch ? cadastralNumberMatch[2].trim() : null,
+            Этаж: floorMatch ? floorMatch[1].trim() : null
+        })
+
     }
     return {
         url: document.URL,

@@ -47,4 +47,21 @@ public class LotController {
         );
     }
 
+    @PostMapping("update")
+    public Lot updateLot(@RequestBody HandLot handLot) {
+        UserData userData = userDataService.find(
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName()
+        );
+
+        return lotService.update(
+                lotMapper.mapHandLotToLot(
+                        handLot,
+                        userData
+                )
+        );
+    }
+
 }

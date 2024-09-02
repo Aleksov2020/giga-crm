@@ -30,4 +30,12 @@ public class LotService {
                 lot
         );
     }
+
+    public Lot update(Lot lot) {
+        if (lotRepository.existsById(lot.getId())) {
+            return lotRepository.save(lot);
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
 }

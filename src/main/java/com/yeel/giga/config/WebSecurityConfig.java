@@ -43,7 +43,7 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Разрешаем запросы с localhost:5173
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://ibrocker.yeel.studio")); // Разрешаем запросы с localhost:5173
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Разрешаем методы HTTP
         configuration.setAllowedHeaders(List.of("*")); // Разрешаем все заголовки
         configuration.setAllowCredentials(true); // Разрешаем отправку куков

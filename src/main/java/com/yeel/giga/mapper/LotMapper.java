@@ -12,6 +12,7 @@ import com.yeel.giga.repository.AvitoEntityRepository;
 import com.yeel.giga.repository.BuyInformationRepository;
 import com.yeel.giga.repository.LotMoneyRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LotMapper {
@@ -78,6 +80,43 @@ public class LotMapper {
                         )
                 ),
                 new ArrayList<>(),
+                owner
+        );
+    }
+
+    public Lot mapHandLotToLotForUpdate(HandLot handLot, UserData owner) {
+        log.info(handLot.getLotLink());
+
+        return new Lot(
+                handLot.getId(),
+                handLot.getName(),
+                handLot.getAddress(),
+                handLot.getPhone(),
+                handLot.getEmail(),
+                handLot.getKadastrNumber(),
+                handLot.getKadastrPrice(),
+                handLot.getNumberSell(),
+                handLot.getSquare(),
+                handLot.getLotType(),
+                handLot.getLotStatus(),
+                handLot.getDateEnd(),
+                handLot.getDatePublished(),
+                LocalDate.now(),
+                handLot.getLotLink(),
+                handLot.getLotDiskLink(),
+                handLot.getAvitoLink(),
+                handLot.getComment(),
+                lotMoneyRepository.save(
+                        lotMoneyMapper.mapLotMoneyDTOToLotMoney(
+                                handLot.getLotMoney()
+                        )
+                ),
+                buyInformationRepository.save(
+                        buyInformationMapper.mapBuyInformationDTOToBuyInformation(
+                                handLot.getBuyInformation()
+                        )
+                ),
+                handLot.getAvitoEntities(),
                 owner
         );
     }

@@ -8,11 +8,13 @@ import com.yeel.giga.model.UserData;
 import com.yeel.giga.service.LotService;
 import com.yeel.giga.service.UserDataService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/lot")
@@ -23,7 +25,14 @@ public class LotController {
 
     @GetMapping()
     public List<LotBasicDTO> getAllBasic() {
-        return lotService.getAll().stream().map(
+        UserData userData = userDataService.find(
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName()
+        );
+
+        return lotService.getLotByOwner(userData).stream().map(
                 lotMapper::mapLotToLotBasicDTO
         ).toList();
     }
@@ -56,12 +65,13 @@ public class LotController {
                         .getName()
         );
 
+        log.info("34534");
+
         return lotService.update(
-                lotMapper.mapHandLotToLot(
+                lotMapper.mapHandLotToLotForUpdate(
                         handLot,
                         userData
                 )
         );
     }
-
 }

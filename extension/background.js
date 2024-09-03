@@ -226,7 +226,7 @@ async function PerformFullCycle(data) {
     }).toString();
 
     // Отправка POST-запроса с использованием fetch
-    fetch(`http://localhost:2000/api/v1/app?${params}`, {
+    fetch(`http://ibrocker.yeel.studio:2020/api/v1/app?${params}`, {
         method: 'POST',
         mode: 'no-cors',
         headers: {

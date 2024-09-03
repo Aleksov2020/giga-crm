@@ -1,6 +1,7 @@
 package com.yeel.giga.mapper;
 
 import com.yeel.giga.dto.request.appRequest.AvitoEntityDTO;
+import com.yeel.giga.dto.request.appRequest.AvitoEntityDetailDTO;
 import com.yeel.giga.enums.AvitoEntityStatus;
 import com.yeel.giga.model.AvitoEntity;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,20 @@ public class AvitoEntityMapper {
         avitoEntity.setAvitoEntityStatus(AvitoEntityStatus.ACTIVE);
 
         return avitoEntity;
+    }
+
+    public AvitoEntity mapAvitoEntityDetailDTOtoAvitoEntity(AvitoEntityDetailDTO avitoEntityDetailDTO) {
+        return new AvitoEntity(
+                avitoEntityDetailDTO.getId(),
+                avitoEntityDetailDTO.getAdName(),
+                avitoEntityDetailDTO.getSquareHouse(),
+                avitoEntityDetailDTO.getSquareField(),
+                avitoEntityDetailDTO.getPrice(),
+                avitoEntityDetailDTO.getPricePerMeter(),
+                avitoEntityDetailDTO.getPhone(),
+                avitoEntityDetailDTO.getViewsCount(),
+                avitoEntityDetailDTO.getAvitoEntityStatus()
+        );
     }
 
 }

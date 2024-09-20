@@ -69,10 +69,12 @@ public class LotMapper {
                 handLot.getLotDiskLink(),
                 handLot.getAvitoLink(),
                 handLot.getComment(),
-                lotMoneyRepository.save(
+                handLot.getLotMoney() != null ? lotMoneyRepository.save(
                         lotMoneyMapper.mapLotMoneyDTOToLotMoney(
                                 handLot.getLotMoney()
                         )
+                ) : lotMoneyRepository.save(
+                        new LotMoney()
                 ),
                 buyInformationRepository.save(
                         buyInformationMapper.mapBuyInformationDTOToBuyInformation(

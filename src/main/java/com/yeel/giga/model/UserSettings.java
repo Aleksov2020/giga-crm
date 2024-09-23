@@ -27,6 +27,7 @@ public class UserSettings {
     private Boolean isShowDateCreated;
 
     public UserSettings update(UserSettings userSettings) {
+        this.isShowName = userSettings.isShowName;
         this.isShowComment = userSettings.isShowComment;
         this.isShowDateEnd = userSettings.isShowDateEnd;
         this.isShowZadatok = userSettings.isShowZadatok;
